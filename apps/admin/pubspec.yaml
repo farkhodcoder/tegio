@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  qr_flutter: ^4.1.0
+  supabase_flutter: ^2.18.3
   tegio_core:
     path: ../../packages/tegio_core
 

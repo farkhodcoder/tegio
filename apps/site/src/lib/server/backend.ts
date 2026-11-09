@@ -1,16 +1,19 @@
 import type { CardState, MyCard, Plan, Profile, PublicPage, Visit } from '#lib/types.ts';
 import { demoBackend } from './demo';
+import { remoteBackend } from './remote';
 
 export type FeedbackInput = { rating: number; text: string; contact: string; tag: string | null };
 
 export interface Backend {
   readonly demo: boolean;
   getPlans(): Promise<Plan[]>;
+  // Admin paneldan o'zgartirilgan sayt matnlari (S-06).
+  getContent?(locale: string): Promise<Record<string, string>>;
   getPage(slug: string, tag: string | null): Promise<PublicPage | null>;
-  logEvent(slug: string, action: string, tag: string | null): Promise<void>;
+  logEvent(slug: string, action: string, tag: string | null, device: string): Promise<void>;
   submitFeedback(slug: string, deviceKey: string, input: FeedbackInput): Promise<'ok' | 'rate_limited'>;
-  requestDemo(input: { name: string; phone: string; business_name: string }): Promise<void>;
-  sendOtp(phone: string): Promise<{ ok: true; devCode?: string } | { ok: false; error: 'rate_limited' }>;
+  requestDemo(input: { name: string; phone: string; business_name: string }, ip: string): Promise<void>;
+  sendOtp(phone: string, ip: string): Promise<{ ok: true; devCode?: string } | { ok: false; error: 'rate_limited' | 'sms_unavailable' }>;
   verifyOtp(phone: string, code: string): Promise<string | null>;
   getProfile(session: string): Promise<Profile | null>;
   join(session: string, slug: string, input: { name: string; terms: boolean; marketing: boolean }): Promise<boolean>;
@@ -27,8 +30,11 @@ export interface Backend {
   demoTags?(slug: string, count: number): Promise<{ code: string; table_label: string }[]>;
 }
 
-// Supabase loyihasi ulanganda shu yerda Edge Functions'ga boradigan amalga almashtiriladi.
-export const backend: Backend = demoBackend;
+const apiUrl = process.env.TEGIO_API_URL;
+// Serverda API manzili unutilsa, sayt jimgina xotiradagi demo bo'lib ishlab ketmasligi kerak.
+if (!apiUrl && process.env.VERCEL) throw new Error('TEGIO_API_URL is not set');
+
+export const backend: Backend = apiUrl ? remoteBackend(apiUrl) : demoBackend;
 
 export const SESSION_COOKIE = 'tegio_session';
 export const DEVICE_COOKIE = 'tegio_device';

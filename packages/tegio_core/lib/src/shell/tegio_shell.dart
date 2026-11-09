@@ -10,12 +10,13 @@ class ShellSection {
 
 /// Keng ekranda yon panel, telefonda menyu tugmasi (B: kompyuter, planshet, telefon).
 class TegioShell extends StatefulWidget {
-  const TegioShell({super.key, required this.title, required this.sections});
+  const TegioShell({super.key, required this.title, required this.sections, this.actions = const []});
 
   static const double wideBreakpoint = 840;
 
   final String title;
   final List<ShellSection> sections;
+  final List<Widget> actions;
 
   @override
   State<TegioShell> createState() => _TegioShellState();
@@ -42,7 +43,7 @@ class _TegioShellState extends State<TegioShell> {
     final content = KeyedSubtree(key: ValueKey(_index), child: section.builder(context));
 
     return Scaffold(
-      appBar: AppBar(title: Text(wide ? widget.title : section.label)),
+      appBar: AppBar(title: Text(wide ? widget.title : section.label), actions: widget.actions),
       drawer: wide ? null : drawer,
       body: wide
           ? Row(

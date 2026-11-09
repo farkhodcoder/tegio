@@ -4,10 +4,10 @@ import type { RequestHandler } from './$types';
 
 const ACTION = /^[a-z0-9_]{1,32}$/;
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
   const body = await request.json().catch(() => null);
   if (typeof body?.slug === 'string' && typeof body?.action === 'string' && ACTION.test(body.action)) {
-    await backend.logEvent(body.slug, body.action, typeof body.tag === 'string' ? body.tag : null);
+    await backend.logEvent(body.slug, body.action, typeof body.tag === 'string' ? body.tag : null, getClientAddress());
   }
   return new Response(null, { status: 204 });
 };

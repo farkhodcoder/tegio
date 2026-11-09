@@ -33,6 +33,7 @@
     </label>
     {#if result?.otpError === 'phone'}<p class="error" role="alert">{m.card_bad_phone}</p>{/if}
     {#if result?.otpError === 'rate'}<p class="error" role="alert">{m.card_rate}</p>{/if}
+    {#if result?.otpError === 'sms'}<p class="error" role="alert">{m.card_sms_down}</p>{/if}
     <button class="btn">{m.card_phone_send}</button>
   </form>
 {/if}

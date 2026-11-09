@@ -1,0 +1,104 @@
+# Domenga ulash
+
+Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`, `ap-south-1`). Sayt, restoran tizimi va admin panel Vercel'ga alohida-alohida joylanadi. Domen hali tanlanmagan, quyida `tegio.uz` o'rniga haqiqiy domeningizni yozing.
+
+| Manzil | Ilova |
+| --- | --- |
+| `tegio.uz` | Mehmon sayti (`apps/site`) |
+| `biz.tegio.uz` | Restoran tizimi (`apps/biz`) |
+| `admin.tegio.uz` | Admin panel (`apps/admin`) |
+
+## 1. Edge Function sirlari
+
+Supabase Dashboard: Project Settings, Edge Functions, Secrets. Kalit qo'shilmaguncha tegishli funksiya xato qaytarmaydi, foydalanuvchiga "ulanmagan" deb aytadi.
+
+| Sir | Nima uchun |
+| --- | --- |
+| `ESKIZ_EMAIL`, `ESKIZ_PASSWORD`, `ESKIZ_FROM` | SMS kod. Busiz hech kim telefon orqali kira olmaydi |
+| `SMS_TEMPLATE` | Ixtiyoriy. Eskiz'da tasdiqlangan matn, `{code}` bilan |
+| `CLICK_SERVICE_ID`, `CLICK_MERCHANT_ID`, `CLICK_SECRET_KEY` | Click to'lovi |
+| `PAYME_MERCHANT_ID`, `PAYME_KEY` | Payme to'lovi |
+| `TELEGRAM_BOT_TOKEN` | Yangi fikr haqida Telegram xabari |
+| `ANTHROPIC_API_KEY` | Menyuni rasmdan o'qish va tarjima |
+
+To'lov tizimlari kabinetida webhook manzillari:
+
+- Click: `https://zfgeeblonoxqxcdndshm.supabase.co/functions/v1/api/webhooks/click`
+- Payme: `https://zfgeeblonoxqxcdndshm.supabase.co/functions/v1/api/webhooks/payme`
+
+`OTP_DEV_MODE=true` kodni javobda qaytaradi. U faqat Eskiz ulanmagan paytdagi qisqa sinov uchun; har qanday telefon raqamiga kirish ochiladi, shuning uchun sinovdan keyin darhol o'chiring.
+
+## 2. Sayt
+
+Vercel'da yangi loyiha, shu repozitoriydan:
+
+- Root Directory: `apps/site`
+- Framework: SvelteKit (avtomatik aniqlanadi)
+- Environment Variables:
+
+| O'zgaruvchi | Qiymat |
+| --- | --- |
+| `TEGIO_API_URL` | `https://zfgeeblonoxqxcdndshm.supabase.co/functions/v1/api` |
+| `TEGIO_PUBLIC_URL` | `https://tegio.uz` |
+| `BIZ_URL` | `https://biz.tegio.uz` |
+
+`TEGIO_API_URL` qo'yilmasa, Vercel'dagi build atayin to'xtaydi: demo ma'lumot jonli saytga chiqmasligi kerak.
+
+## 3. Restoran tizimi va admin panel
+
+`TEGIO_PUBLIC_URL` Flutter'ga build vaqtida yoziladi va stol QR yorliqlari shu manzilga olib boradi. Yorliqlarni chop etishdan oldin haqiqiy domen bilan build qiling.
+
+```bash
+cd apps/biz
+```
+
+```bash
+flutter build web --release --dart-define=TEGIO_PUBLIC_URL=https://tegio.uz
+```
+
+```bash
+npx vercel deploy build/web --prod
+```
+
+Admin panel uchun xuddi shu uch buyruq, `apps/admin` papkasida. Har biri alohida Vercel loyihasi bo'ladi.
+
+## 4. DNS
+
+Har bir Vercel loyihasida Settings, Domains orqali domenni qo'shing. Vercel ko'rsatgan yozuvlar ustun turadi, odatda:
+
+| Yozuv | Nom | Qiymat |
+| --- | --- | --- |
+| A | `@` | `76.76.21.21` |
+| CNAME | `www` | `cname.vercel-dns.com` |
+| CNAME | `biz` | `cname.vercel-dns.com` |
+| CNAME | `admin` | `cname.vercel-dns.com` |
+
+SSL sertifikatini Vercel o'zi beradi.
+
+## 5. Supabase Auth
+
+Dashboard: Authentication.
+
+- URL Configuration: Site URL = `https://admin.tegio.uz`. Redirect URLs ga `https://admin.tegio.uz/**` va `https://biz.tegio.uz/**`.
+- Sign In / Providers: "Allow new users to sign up" ni o'chiring. Telefon akkauntlarini server o'zi yaratadi, adminlar taklif bilan kiradi.
+- Multi-Factor: TOTP yoqilgan bo'lsin.
+
+## 6. Birinchi super admin
+
+1. Dashboard, Authentication, Users, Add user: email va parol kiriting.
+2. SQL Editor'da (emailni o'zingiznikiga almashtiring):
+
+```sql
+insert into public.admin_users (user_id, email, role, status)
+select id, email, 'super_admin', 'invited' from auth.users where email = 'siz@misol.uz';
+```
+
+3. `admin.tegio.uz` ga kiring, TOTP'ni ulang. Birinchi muvaffaqiyatli kirishda holat `active` bo'ladi. Keyingi adminlar panelning Xavfsizlik bo'limidan taklif qilinadi.
+
+## 7. Tekshiruv
+
+- `https://tegio.uz` da tariflar ko'rinadi.
+- `https://tegio.uz/me` da o'z raqamingizga SMS keladi va kirasiz.
+- `biz.tegio.uz` da biznes yarating, sahifani e'lon qiling, `tegio.uz/<slug>` ochiladi.
+- Stol QR'ini telefonda skan qiling, karta oching, kassir bo'limida shtamp qo'ying.
+- Click yoki Payme bilan eng kichik tarifni to'lang, tarif yoqilganini tekshiring.

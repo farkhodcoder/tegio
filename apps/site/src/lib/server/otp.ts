@@ -4,12 +4,12 @@ import { backend, SESSION_COOKIE } from './backend';
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 90;
 
-export async function sendOtpAction(request: Request) {
+export async function sendOtpAction(request: Request, ip: string) {
   const form = await request.formData();
   const phone = normalizeUzPhone(String(form.get('phone') ?? ''));
   if (!phone) return { otpError: 'phone' };
-  const sent = await backend.sendOtp(phone);
-  if (!sent.ok) return { otpError: 'rate' };
+  const sent = await backend.sendOtp(phone, ip);
+  if (!sent.ok) return { otpError: sent.error === 'rate_limited' ? 'rate' : 'sms' };
   return { phone, devCode: sent.devCode };
 }
 

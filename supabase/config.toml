@@ -1,4 +1,4 @@
 project_id = "tegio"
 
-[functions.public]
+[functions.api]
 verify_jwt = false

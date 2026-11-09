@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 };
 
 export const actions: Actions = {
-  send: async ({ request }) => sendOtpAction(request),
+  send: async ({ request, getClientAddress }) => sendOtpAction(request, getClientAddress()),
   verify: async ({ request, cookies }) => verifyOtpAction(request, cookies),
   join: async ({ request, cookies, params }) => {
     const session = cookies.get(SESSION_COOKIE);

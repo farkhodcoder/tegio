@@ -1,11 +1,11 @@
 {
-    "name": "tegio_biz",
-    "short_name": "tegio_biz",
+    "name": "TEGIO restoran tizimi",
+    "short_name": "TEGIO",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F2F6FA",
+    "theme_color": "#1D3FA8",
+    "description": "TEGIO: menyu, sodiqlik kartasi va kassir",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

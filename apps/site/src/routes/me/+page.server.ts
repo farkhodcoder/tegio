@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 };
 
 export const actions: Actions = {
-  send: async ({ request }) => sendOtpAction(request),
+  send: async ({ request, getClientAddress }) => sendOtpAction(request, getClientAddress()),
   verify: async ({ request, cookies }) => verifyOtpAction(request, cookies),
   profile: async ({ request, cookies }) => {
     const session = cookies.get(SESSION_COOKIE);

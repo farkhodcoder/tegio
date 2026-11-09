@@ -33,7 +33,7 @@ pnpm install
 pnpm dev
 ```
 
-Sayt `http://localhost:5173` da ochiladi. Supabase ulanmagan, shuning uchun u xotiradagi demo ma'lumot bilan ishlaydi (`apps/site/src/lib/server/demo.ts`). Namuna sahifalar: `/anor?t=S7`, stol QR yorliqlari `/anor/yorliq` va to'lovi to'xtagan biznes `/yopiq`. SMS kod demo rejimda ekranda ko'rinadi.
+Sayt `http://localhost:5173` da ochiladi. `TEGIO_API_URL` berilmasa, u xotiradagi demo ma'lumot bilan ishlaydi (`apps/site/src/lib/server/demo.ts`); berilsa, Supabase'dagi API bilan. Namuna sahifalar: `/anor?t=S7`, stol QR yorliqlari `/anor/yorliq` va to'lovi to'xtagan biznes `/yopiq`. SMS kod demo rejimda ekranda ko'rinadi.
 
 Yorliqni telefonda sinash uchun sayt bir Wi-Fi tarmog'ida ochilishi kerak. Build qiling, keyin ishga tushiring va `/anor/yorliq` ni kompyuterning tarmoq manzili orqali oching (QR shu manzilni oladi):
 
@@ -68,3 +68,7 @@ flutter test packages/tegio_core
 ```
 
 Sinov nomlarida TTZ talab raqami turadi (masalan `B-29`), shuning uchun talabdan sinovga qidirib o'tish mumkin.
+
+## Joylash
+
+Domenga ulash, sirlar va birinchi admin: [docs/deploy.md](docs/deploy.md).

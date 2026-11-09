@@ -9,13 +9,13 @@ export const load: PageServerLoad = async () => ({
 });
 
 export const actions: Actions = {
-  demo: async ({ request }) => {
+  demo: async ({ request, getClientAddress }) => {
     const form = await request.formData();
     const name = String(form.get('name') ?? '').trim();
     const business_name = String(form.get('business_name') ?? '').trim();
     const phone = normalizeUzPhone(String(form.get('phone') ?? ''));
     if (!name || !phone) return fail(400, { demoError: true });
-    await backend.requestDemo({ name, phone, business_name });
+    await backend.requestDemo({ name, phone, business_name }, getClientAddress());
     return { demoDone: true };
   }
 };

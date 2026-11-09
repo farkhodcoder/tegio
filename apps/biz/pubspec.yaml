@@ -10,8 +10,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image_picker: ^1.2.4
+  mobile_scanner: ^7.5.0
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  supabase_flutter: ^2.18.3
   tegio_core:
     path: ../../packages/tegio_core
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

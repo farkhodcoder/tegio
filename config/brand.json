@@ -1,0 +1,18 @@
+{
+  "name": "TEGIO",
+  "logo": null,
+  "favicon": null,
+  "colors": {
+    "primary": "#1D3FA8",
+    "ink": "#101A38",
+    "muted": "#515C7A",
+    "paper": "#F2F6FA",
+    "surface": "#FFFFFF",
+    "line": "#D8E0EC",
+    "accent": "#0B7A7A",
+    "crust": "#C8892E",
+    "dough": "#EFD3A0",
+    "success": "#1F7A4D",
+    "danger": "#B3261E"
+  }
+}

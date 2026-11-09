@@ -1,0 +1,22 @@
+name: tegio_admin
+description: TEGIO admin panel (admin.tegio.uz).
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  tegio_core:
+    path: ../../packages/tegio_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

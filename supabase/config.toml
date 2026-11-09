@@ -1,0 +1,4 @@
+project_id = "tegio"
+
+[functions.public]
+verify_jwt = false

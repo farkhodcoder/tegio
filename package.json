@@ -1,0 +1,11 @@
+{
+  "name": "tegio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @tegio/site dev",
+    "build": "pnpm --filter @tegio/site build",
+    "test:db": "pnpm --filter @tegio/db-tests test",
+    "sync:brand": "node tools/sync-brand.mjs"
+  }
+}

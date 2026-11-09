@@ -1,0 +1,150 @@
+@import '@fontsource-variable/unbounded/wght.css';
+
+:root {
+  --display: 'Unbounded Variable', system-ui, sans-serif;
+  --body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --biz: var(--primary);
+  --on-biz: var(--on-primary);
+  --radius: 14px;
+}
+
+/* Unbounded'da o'zbek kirill harflari (қ, ғ, ҳ) yo'q: sarlavha aralash chiqmasin. */
+html[lang='uz-Cyrl'] {
+  --display: var(--body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.5 var(--body);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+}
+
+a {
+  color: var(--primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.page {
+  width: min(100%, 560px);
+  margin-inline: auto;
+  padding: 16px;
+}
+
+.stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+.panel {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--biz);
+  color: var(--on-biz);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn.ghost {
+  border: 1.5px solid currentColor;
+  background: transparent;
+  color: var(--primary);
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+input:not([type='checkbox'], [type='radio'], [type='hidden']),
+textarea,
+select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--muted);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+}
+
+label.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 400;
+}
+
+label.check input {
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  flex: none;
+  accent-color: var(--biz);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--dough);
+  color: #3f2906;
+  font-weight: 600;
+}
+
+.ok {
+  margin: 0;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+}

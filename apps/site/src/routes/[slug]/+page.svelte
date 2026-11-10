@@ -18,7 +18,8 @@
     wifi: 'M2.5 9a14 14 0 0 1 19 0M5.8 12.8a9 9 0 0 1 12.4 0M9 16.4a4.2 4.2 0 0 1 6 0M12 20h.01',
     loyalty: 'M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.3a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20Z',
     feedback: 'M4 5h16v11H9l-5 4V5Z',
-    google: 'M12 3.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.8l6-.7L12 3.5Z'
+    google: 'M12 3.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.8l6-.7L12 3.5Z',
+    game: 'M4 4h16v16H4ZM9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16'
   };
 
   function track(action: string) {
@@ -52,6 +53,8 @@
       const feedback = list.findIndex((row) => row.kind === 'feedback');
       list.splice(feedback < 0 ? list.length : feedback + 1, 0, { kind: 'google', href: google, text: m.fb_google_title, external: true });
     }
+    // Kutish paytidagi mini-o'yin: hamma kafeda oxirgi qator.
+    list.push({ kind: 'game', href: `/${cafe.slug}/oyin${page.url.search}`, text: m.btn_game, external: false });
     return list;
   });
 </script>

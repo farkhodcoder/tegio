@@ -85,16 +85,24 @@
   .rating span {
     display: grid;
     place-items: center;
-    height: 56px;
-    border: 1.5px solid var(--muted);
-    border-radius: 12px;
+    height: 60px;
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
     background: var(--surface);
-    font: 500 1.25rem var(--display);
+    box-shadow: var(--shadow);
+    font: 600 1.25rem var(--display);
+    transition: transform 200ms cubic-bezier(0.3, 1.6, 0.5, 1);
   }
   .rating input:checked + span {
     border-color: var(--biz);
     background: var(--biz);
     color: var(--on-biz);
+    transform: scale(1.08) rotate(-4deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rating span {
+      transition: none;
+    }
   }
   .rating input:focus-visible + span {
     outline: 3px solid var(--accent);

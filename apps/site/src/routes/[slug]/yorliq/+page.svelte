@@ -100,7 +100,7 @@
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: #fff;
-    color: #101a38;
+    color: #2b1510;
     text-align: center;
   }
   .tag header {
@@ -129,7 +129,7 @@
   }
   .scan {
     margin: 0;
-    color: #515c7a;
+    color: #7a564a;
     font-size: 0.875rem;
   }
   .table {
@@ -142,7 +142,7 @@
     gap: 6px;
     width: 100%;
     padding: 6px 14px;
-    border-top: 1px solid #d8e0ec;
+    border-top: 1px solid #f5dacb;
     text-align: left;
     font-size: 0.875rem;
   }
@@ -154,7 +154,7 @@
   footer {
     width: 100%;
     padding: 6px;
-    border-top: 1px solid #d8e0ec;
+    border-top: 1px solid #f5dacb;
     font-size: 0.8125rem;
     font-weight: 700;
   }
@@ -190,7 +190,7 @@
       height: 134mm;
       justify-content: space-between;
       break-inside: avoid;
-      border-color: #9aa5bd;
+      border-color: #d9a68d;
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }

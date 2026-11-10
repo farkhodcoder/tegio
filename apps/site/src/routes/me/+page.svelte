@@ -105,7 +105,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 8px 8px 16px;
+    padding: 10px 10px 10px 18px;
+    border-radius: 0 0 24px 24px;
     background: var(--primary);
     color: var(--on-primary);
   }

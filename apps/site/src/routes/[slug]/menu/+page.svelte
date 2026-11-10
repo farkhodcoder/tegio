@@ -100,15 +100,15 @@
     display: flex;
     gap: 4px;
     margin-bottom: 12px;
-    padding: 4px;
-    border-radius: 12px;
-    background: var(--line);
+    padding: 5px;
+    border-radius: 999px;
+    background: var(--peach);
   }
   .tabs button {
     flex: 1;
     min-height: 44px;
     border: 0;
-    border-radius: 9px;
+    border-radius: 999px;
     background: transparent;
     color: var(--ink);
     font: inherit;
@@ -117,6 +117,7 @@
   }
   .tabs button[aria-selected='true'] {
     background: var(--surface);
+    box-shadow: var(--shadow);
     font-weight: 700;
   }
   .chips {
@@ -161,7 +162,7 @@
   }
   li img {
     flex: none;
-    border-radius: 10px;
+    border-radius: 16px;
     object-fit: cover;
   }
   .info {

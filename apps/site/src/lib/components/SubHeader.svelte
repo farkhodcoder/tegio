@@ -17,8 +17,10 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 8px 8px 8px 4px;
+    padding: 10px 10px 10px 6px;
+    border-radius: 0 0 24px 24px;
     background: var(--biz);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--biz) 22%, transparent);
     color: var(--on-biz);
   }
   a {

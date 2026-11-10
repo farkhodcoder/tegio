@@ -2,27 +2,56 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "site-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@tegio/site",
+        "dev"
+      ],
+      "port": 5173
+    },
+    {
       "name": "site",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@tegio/site", "preview"],
+      "runtimeArgs": [
+        "--filter",
+        "@tegio/site",
+        "preview"
+      ],
       "port": 4173
     },
     {
       "name": "site-live",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "set TEGIO_API_URL=https://zfgeeblonoxqxcdndshm.supabase.co/functions/v1/api&& pnpm --filter @tegio/site exec vite preview --port 4174"],
+      "runtimeArgs": [
+        "/c",
+        "set TEGIO_API_URL=https://zfgeeblonoxqxcdndshm.supabase.co/functions/v1/api&& pnpm --filter @tegio/site exec vite preview --port 4174"
+      ],
       "port": 4174
     },
     {
       "name": "biz-web",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "4175", "-d", "apps/biz/build/web"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4175",
+        "-d",
+        "apps/biz/build/web"
+      ],
       "port": 4175
     },
     {
       "name": "admin-web",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "4176", "-d", "apps/admin/build/web"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4176",
+        "-d",
+        "apps/admin/build/web"
+      ],
       "port": 4176
     }
   ]

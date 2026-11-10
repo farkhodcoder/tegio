@@ -3,16 +3,16 @@
   "logo": null,
   "favicon": null,
   "colors": {
-    "primary": "#1D3FA8",
-    "ink": "#101A38",
-    "muted": "#515C7A",
-    "paper": "#F2F6FA",
+    "primary": "#D63A0C",
+    "ink": "#2B1510",
+    "muted": "#7A564A",
+    "paper": "#FFF4EC",
     "surface": "#FFFFFF",
-    "line": "#D8E0EC",
-    "accent": "#0B7A7A",
-    "crust": "#C8892E",
-    "dough": "#EFD3A0",
-    "success": "#1F7A4D",
-    "danger": "#B3261E"
+    "line": "#F5DACB",
+    "accent": "#6C47FF",
+    "crust": "#E8862A",
+    "dough": "#FFD8A8",
+    "success": "#1E7F4F",
+    "danger": "#C62828"
   }
 }

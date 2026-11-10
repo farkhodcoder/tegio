@@ -32,7 +32,8 @@ export interface Backend {
 
 const apiUrl = process.env.TEGIO_API_URL;
 // Serverda API manzili unutilsa, sayt jimgina xotiradagi demo bo'lib ishlab ketmasligi kerak.
-if (!apiUrl && process.env.VERCEL) throw new Error('TEGIO_API_URL is not set');
+// Sinov havolasi uchun demo faqat ochiq so'ralganda yoqiladi: TEGIO_DEMO=1.
+if (!apiUrl && process.env.VERCEL && process.env.TEGIO_DEMO !== '1') throw new Error('TEGIO_API_URL is not set');
 
 export const backend: Backend = apiUrl ? remoteBackend(apiUrl) : demoBackend;
 

@@ -21,7 +21,7 @@
     min-width: 40px;
     min-height: 40px;
     border: 0;
-    border-radius: 8px;
+    border-radius: 10px;
     background: transparent;
     color: inherit;
     font: inherit;

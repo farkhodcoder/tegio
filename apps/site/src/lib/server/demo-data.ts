@@ -28,7 +28,7 @@ const anor: PublicPage = {
   status: 'active',
   name: 'Anor choyxonasi',
   slug: 'anor',
-  brand: { primary: '#1D3FA8', tagline: 'Toshkentning issiq noni va achchiq choyi' },
+  brand: { primary: '#D63A0C', tagline: 'Toshkentning issiq noni va achchiq choyi' },
   show_branding: true,
   tag: null,
   location: {

@@ -119,8 +119,13 @@
 
 <style>
   .top {
+    position: relative;
     overflow: hidden;
-    background: var(--primary);
+    border-radius: 0 0 40px 40px;
+    background:
+      radial-gradient(circle at 92% 8%, var(--sun) 0 140px, transparent 141px),
+      radial-gradient(circle at 70% 115%, #ff9a5c 0 190px, transparent 191px),
+      var(--primary);
     color: var(--on-primary);
   }
   .bar {
@@ -171,8 +176,9 @@
     gap: 12px;
   }
   .btn.light {
-    background: var(--dough);
-    color: var(--ink);
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 8px 20px rgb(80 20 0 / 25%);
   }
   .btn.outline {
     border: 1.5px solid currentColor;
@@ -180,8 +186,20 @@
     color: inherit;
   }
   .disc {
-    margin-right: -90px;
-    margin-bottom: -150px;
+    margin-right: -40px;
+    margin-bottom: -110px;
+    filter: drop-shadow(0 18px 30px rgb(80 20 0 / 30%));
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    50% {
+      transform: translateY(-10px) rotate(3deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .disc {
+      animation: none;
+    }
   }
   .section {
     width: min(100%, 1120px);
@@ -195,12 +213,24 @@
   dl {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
+    gap: 14px;
     margin: 0;
   }
+  dl div {
+    padding: 20px;
+    border-radius: var(--radius);
+    background: var(--t);
+  }
+  dl div:nth-child(1) { --t: var(--t-menu); --i: var(--i-menu); }
+  dl div:nth-child(2) { --t: var(--t-wifi); --i: var(--i-wifi); }
+  dl div:nth-child(3) { --t: var(--t-loyalty); --i: var(--i-loyalty); }
+  dl div:nth-child(4) { --t: var(--t-feedback); --i: var(--i-feedback); }
   dt {
-    font-weight: 700;
-    font-size: 1.125rem;
+    color: var(--i);
+    font: 600 1.125rem var(--display);
+  }
+  dd {
+    color: var(--ink) !important;
   }
   dd {
     margin: 4px 0 0;
@@ -215,10 +245,20 @@
     list-style: none;
   }
   li span {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--crust);
-    font: 500 2.25rem var(--display);
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 10px;
+    border-radius: 18px;
+    background: var(--primary);
+    color: var(--on-primary);
+    font: 600 1.5rem var(--display);
+    transform: rotate(-6deg);
+  }
+  li:nth-child(even) span {
+    background: var(--accent);
+    transform: rotate(5deg);
   }
   .plans {
     display: grid;
@@ -226,13 +266,22 @@
     gap: 12px;
   }
   article {
-    padding: 20px;
+    padding: 22px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--surface);
+    box-shadow: var(--shadow);
   }
   article.featured {
-    border: 2px solid var(--primary);
+    border: 0;
+    background: var(--primary);
+    color: var(--on-primary);
+    box-shadow: var(--shadow-lift);
+    transform: rotate(-1.5deg);
+  }
+  article.featured p:last-child {
+    color: inherit;
+    opacity: 0.9;
   }
   h3 {
     margin: 0;
@@ -253,6 +302,11 @@
     color: var(--muted);
   }
   .demo {
+    width: min(calc(100% - 32px), 1088px);
+    margin-top: 56px;
+    padding: 32px 24px;
+    border-radius: 32px;
+    background: var(--peach);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
     gap: 32px;
@@ -292,9 +346,11 @@
       gap: 14px;
     }
     li span {
-      width: 1.2em;
+      flex: none;
+      width: 44px;
+      height: 44px;
       margin: 0;
-      font-size: 1.75rem;
+      font-size: 1.25rem;
     }
   }
   @media (max-width: 520px) {

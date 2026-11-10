@@ -1,87 +1,97 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import SubHeader from '#lib/components/SubHeader.svelte';
   import { fmt } from '#lib/i18n.ts';
-  import { conflicts, formatTime, isSolved, peersOf, puzzle, type Board, type Level } from '#lib/sudoku.ts';
+  import { levelFor, pointsFor, question, rankFor, type Question } from '#lib/brain.ts';
   import type { ActivePage } from '#lib/types.ts';
 
   let { data } = $props();
   const m = $derived(data.m);
   const cafe = $derived(data.cafe as ActivePage);
 
-  const KEY = 'tegio-sudoku';
-  type Saved = { level: Level; given: Board; board: Board; seconds: number };
+  const ROUND = 60_000;
+  const PENALTY = 3_000;
+  const BEST_KEY = 'tegio-brain-best';
 
-  let level = $state<Level>('easy');
-  let given = $state<Board>([]);
-  let board = $state<Board>([]);
-  let seconds = $state(0);
-  let selected = $state(-1);
+  let phase = $state<'intro' | 'play' | 'over'>('intro');
+  let q = $state<Question | null>(null);
+  let left = $state(ROUND);
+  let score = $state(0);
+  let correct = $state(0);
+  let combo = $state(0);
+  let best = $state(0);
+  let newBest = $state(false);
+  let picked = $state<number | null>(null);
+  let gain = $state<{ id: number; text: string } | null>(null);
 
-  const bad = $derived(conflicts(board));
-  const solved = $derived(board.length === 81 && isSolved(board));
-  const related = $derived(selected < 0 ? new Set<number>() : new Set(peersOf(selected)));
-  const selectedValue = $derived(selected < 0 ? 0 : board[selected]);
+  let deadline = 0;
+  let timer: ReturnType<typeof setInterval> | undefined;
+  let gainId = 0;
 
-  function save() {
-    try {
-      localStorage.setItem(KEY, JSON.stringify({ level, given, board, seconds } satisfies Saved));
-    } catch {
-      // Brauzer xotirasi yopiq bo'lsa o'yin baribir ishlaydi, faqat saqlanmaydi.
-    }
-  }
-
-  function start(next: Level) {
-    level = next;
-    given = puzzle(next);
-    board = [...given];
-    seconds = 0;
-    selected = given.indexOf(0);
-    save();
-  }
+  const prompts = $derived<Record<string, string>>({ seq: m.game_seq, math: m.game_math, odd: m.game_odd, missing: m.game_missing });
+  const ranks = $derived([m.rank_1, m.rank_2, m.rank_3, m.rank_4]);
+  const seconds = $derived(Math.ceil(left / 1000));
 
   onMount(() => {
-    let saved: Saved | null = null;
     try {
-      saved = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+      best = Number(localStorage.getItem(BEST_KEY)) || 0;
     } catch {
-      saved = null;
+      best = 0;
     }
-    if (saved && saved.given?.length === 81 && saved.board?.length === 81) {
-      ({ level, given, board, seconds } = saved);
-      selected = board.indexOf(0);
-    } else {
-      start('easy');
-    }
-    const tick = setInterval(() => {
-      if (!solved && !document.hidden) {
-        seconds += 1;
-        if (seconds % 5 === 0) save();
-      }
-    }, 1000);
-    return () => clearInterval(tick);
   });
+  onDestroy(() => clearInterval(timer));
 
-  function put(value: number) {
-    if (selected < 0 || given[selected] || solved) return;
-    board[selected] = value;
-    save();
+  function start() {
+    score = 0;
+    correct = 0;
+    combo = 0;
+    newBest = false;
+    picked = null;
+    q = question(0);
+    deadline = Date.now() + ROUND;
+    left = ROUND;
+    phase = 'play';
+    clearInterval(timer);
+    timer = setInterval(() => {
+      left = Math.max(0, deadline - Date.now());
+      if (left === 0) finish();
+    }, 100);
   }
 
-  function onKey(event: KeyboardEvent) {
-    if (/^[1-9]$/.test(event.key)) put(Number(event.key));
-    else if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0') put(0);
-    else {
-      const move: Record<string, number> = { ArrowUp: -9, ArrowDown: 9, ArrowLeft: -1, ArrowRight: 1 };
-      if (!(event.key in move)) return;
-      const next = (selected < 0 ? 0 : selected) + move[event.key];
-      if (next >= 0 && next < 81) selected = next;
+  function finish() {
+    clearInterval(timer);
+    phase = 'over';
+    if (score > best) {
+      best = score;
+      newBest = true;
+      try {
+        localStorage.setItem(BEST_KEY, String(score));
+      } catch {
+        // Rekord saqlanmasa ham o'yin davom etadi.
+      }
     }
-    event.preventDefault();
   }
 
-  // Raqam taxtada 9 marta turgan bo'lsa, tugmasi xira.
-  const used = $derived(Array.from({ length: 10 }, (_, d) => board.filter((v) => v === d).length));
+  function answer(value: number) {
+    if (!q || picked !== null || phase !== 'play') return;
+    picked = value;
+    if (value === q.answer) {
+      combo += 1;
+      correct += 1;
+      const points = pointsFor(combo);
+      score += points;
+      gain = { id: ++gainId, text: `+${points}` };
+    } else {
+      combo = 0;
+      deadline -= PENALTY;
+      gain = { id: ++gainId, text: '−3s' };
+    }
+    setTimeout(() => {
+      if (phase !== 'play') return;
+      picked = null;
+      q = question(levelFor(correct));
+    }, 380);
+  }
 </script>
 
 <svelte:head><title>{m.btn_game} · {cafe.name}</title></svelte:head>
@@ -89,192 +99,222 @@
 <SubHeader title={m.btn_game} />
 
 <main class="page stack">
-  <p class="muted intro">{m.game_sub}</p>
-
-  <div class="bar">
-    <div class="levels" role="group">
-      {#each [['easy', m.game_easy], ['hard', m.game_hard]] as [id, text] (id)}
-        <button type="button" aria-pressed={level === id} onclick={() => start(id as Level)}>{text}</button>
-      {/each}
-    </div>
-    <span class="time" aria-live="off">{formatTime(seconds)}</span>
-  </div>
-
-  {#if board.length === 81}
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div class="grid" class:done={solved} role="grid" tabindex="-1" onkeydown={onKey}>
-      {#each board as value, index (index)}
-        <button
-          type="button"
-          role="gridcell"
-          class:given={given[index] !== 0}
-          class:sel={index === selected}
-          class:rel={related.has(index)}
-          class:same={selectedValue !== 0 && value === selectedValue}
-          class:bad={bad.has(index)}
-          class:right={index % 9 === 2 || index % 9 === 5}
-          class:bottom={Math.floor(index / 9) === 2 || Math.floor(index / 9) === 5}
-          aria-label={`${fmt(m.game_cell, { r: Math.floor(index / 9) + 1, c: (index % 9) + 1 })}${value ? `: ${value}` : ''}`}
-          aria-selected={index === selected}
-          onclick={() => (selected = index)}
-        >{value || ''}</button>
-      {/each}
-    </div>
-
-    {#if solved}
-      <p class="win" role="status">{fmt(m.game_solved, { time: formatTime(seconds) })}</p>
-      <button class="btn" type="button" onclick={() => start(level)}>{m.game_new}</button>
-    {:else}
-      <div class="pad">
-        {#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as digit (digit)}
-          <button type="button" class:full={used[digit] >= 9} onclick={() => put(digit)}>{digit}</button>
-        {/each}
-        <button type="button" class="erase" onclick={() => put(0)}>{m.game_erase}</button>
+  {#if phase === 'intro'}
+    <section class="hero panel">
+      <div class="brain" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="88" height="88"><circle cx="32" cy="32" r="30" fill="var(--t-game)" /><path d="M24 18a8 8 0 0 0-8 8 7 7 0 0 0 1 12 8 8 0 0 0 11 8V18Zm16 0a8 8 0 0 1 8 8 7 7 0 0 1-1 12 8 8 0 0 1-11 8V18Z" fill="var(--i-game)" /><path d="M32 18v28" stroke="#fff" stroke-width="2.5" /></svg>
       </div>
-      <button class="btn ghost" type="button" onclick={() => start(level)}>{m.game_new}</button>
-    {/if}
+      <h2>{m.btn_game}</h2>
+      <p class="muted">{m.game_sub}</p>
+      {#if best}<p class="best">{m.game_best}: <b>{best}</b></p>{/if}
+      <button class="btn wide" type="button" onclick={start}>{m.game_start}</button>
+    </section>
+  {:else if phase === 'play' && q}
+    <div class="hud">
+      <span class="chip score">{m.game_score}: <b>{score}</b></span>
+      {#if combo >= 2}<span class="chip combo">{fmt(m.game_combo, { n: Math.min(5, combo) })}</span>{/if}
+      <span class="chip time" class:low={seconds <= 10}>{seconds}s</span>
+    </div>
+    <div class="bar" aria-hidden="true"><span style={`width:${(left / ROUND) * 100}%`}></span></div>
+
+    <section class="card panel">
+      {#key gain?.id}{#if gain}<span class="gain" class:minus={gain.text.startsWith('−')}>{gain.text}</span>{/if}{/key}
+      <p class="kind">{prompts[q.kind]}</p>
+      {#if q.prompt}<p class="prompt">{q.prompt}</p>{/if}
+      <div class="options">
+        {#each q.options as option (option)}
+          <button
+            type="button"
+            class:right={picked !== null && option === q.answer}
+            class:wrong={picked === option && option !== q.answer}
+            disabled={picked !== null}
+            onclick={() => answer(option)}
+          >{option}</button>
+        {/each}
+      </div>
+    </section>
+  {:else if phase === 'over'}
+    <section class="hero panel" role="status">
+      <h2>{m.game_over}</h2>
+      <p class="big">{score}</p>
+      {#if newBest}<p class="new">{m.game_new_best}</p>{/if}
+      <p>{fmt(m.game_result, { n: correct })}</p>
+      <p class="rank">{fmt(m.game_rank, { rank: ranks[rankFor(score) - 1] })}</p>
+      <p class="best">{m.game_best}: <b>{best}</b></p>
+      <button class="btn wide" type="button" onclick={start}>{m.game_again}</button>
+    </section>
   {/if}
 </main>
 
 <style>
-  .intro {
+  .hero {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .hero p {
     margin: 0;
   }
-  .bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+  h2 {
+    margin: 4px 0 0;
+    font: 600 1.5rem/1.2 var(--display);
   }
-  .levels {
-    display: flex;
-    gap: 4px;
-    padding: 4px;
+  .brain svg {
+    animation: wobble 2.4s ease-in-out infinite;
+  }
+  .best {
+    color: var(--muted);
+  }
+  .wide {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .big {
+    color: var(--primary);
+    font: 700 3.5rem/1 var(--display);
+    animation: pop 500ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .new {
+    padding: 4px 14px;
     border-radius: 999px;
-    background: var(--peach);
-  }
-  .levels button {
-    min-height: 40px;
-    padding: 6px 16px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--ink);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .levels button[aria-pressed='true'] {
-    background: var(--surface);
-    box-shadow: var(--shadow);
+    background: var(--t-google);
+    color: var(--i-google);
     font-weight: 700;
   }
-  .time {
+  .rank {
+    font-weight: 700;
+    color: var(--i-feedback);
+  }
+  .hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .chip {
     padding: 6px 14px;
     border-radius: 999px;
-    background: var(--t-game);
-    color: var(--i-game);
-    font: 600 1rem var(--display);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-    overflow: hidden;
-    border: 3px solid var(--ink);
-    border-radius: 18px;
-    background: var(--surface);
-    box-shadow: var(--shadow-lift);
+  .combo {
+    background: var(--t-loyalty);
+    color: var(--i-loyalty);
+    animation: pop 300ms cubic-bezier(0.3, 1.6, 0.5, 1);
   }
-  .grid.done {
-    border-color: var(--success);
-    animation: cheer 600ms cubic-bezier(0.3, 1.6, 0.5, 1);
-  }
-  .grid button {
-    aspect-ratio: 1;
-    min-width: 0;
-    padding: 0;
-    border: 0;
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    background: transparent;
+  .time {
+    margin-left: auto;
+    background: var(--t-game);
     color: var(--i-game);
-    font: 600 clamp(1rem, 5vw, 1.375rem) var(--display);
-    cursor: pointer;
+    font-family: var(--display);
   }
-  .grid button.right {
-    border-right: 2px solid var(--ink);
-  }
-  .grid button.bottom {
-    border-bottom: 2px solid var(--ink);
-  }
-  .grid button:nth-child(9n) {
-    border-right: 0;
-  }
-  .grid button:nth-child(n + 73) {
-    border-bottom: 0;
-  }
-  .grid button.given {
-    color: var(--ink);
-  }
-  .grid button.rel {
-    background: #fff4ec;
-  }
-  .grid button.same {
-    background: var(--peach);
-  }
-  .grid button.sel {
-    background: var(--dough);
-  }
-  .grid button.bad {
+  .time.low {
     background: #ffe1e1;
     color: var(--danger);
   }
-  .grid button:focus-visible {
-    outline-offset: -3px;
+  .bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--peach);
   }
-  .pad {
+  .bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--sun));
+    transition: width 100ms linear;
+  }
+  .card {
+    position: relative;
+    text-align: center;
+  }
+  .kind {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .prompt {
+    margin: 10px 0 4px;
+    font: 600 clamp(1.5rem, 7vw, 2.125rem)/1.2 var(--display);
+    overflow-wrap: anywhere;
+  }
+  .options {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
   }
-  .pad button {
-    min-height: 52px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: var(--surface);
-    box-shadow: var(--shadow);
+  .options button {
+    min-height: 64px;
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
     color: var(--ink);
-    font: 600 1.25rem var(--display);
+    font: 600 1.5rem var(--display);
     cursor: pointer;
     transition: transform 140ms cubic-bezier(0.3, 1.5, 0.5, 1);
   }
-  .pad button:active {
-    transform: scale(0.92);
+  .options button:active {
+    transform: scale(0.95);
   }
-  .pad button.full {
-    opacity: 0.35;
+  .options button:disabled {
+    cursor: default;
   }
-  .pad .erase {
-    font: 700 0.875rem var(--body);
-  }
-  .win {
-    margin: 0;
-    padding: 14px 16px;
-    border-radius: 18px;
+  .options button.right {
+    border-color: var(--success);
     background: #dcf5e6;
     color: var(--success);
-    font-weight: 700;
-    text-align: center;
+    transform: scale(1.04);
   }
-  @keyframes cheer {
-    40% {
-      transform: scale(1.03) rotate(-1deg);
+  .options button.wrong {
+    border-color: var(--danger);
+    background: #ffe1e1;
+    color: var(--danger);
+    animation: shake 300ms;
+  }
+  .gain {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    color: var(--success);
+    font: 700 1.25rem var(--display);
+    animation: float-up 700ms ease-out forwards;
+    pointer-events: none;
+  }
+  .gain.minus {
+    color: var(--danger);
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+  }
+  @keyframes shake {
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  @keyframes float-up {
+    to {
+      transform: translateY(-24px);
+      opacity: 0;
+    }
+  }
+  @keyframes wobble {
+    50% {
+      transform: rotate(6deg) scale(1.05);
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .grid.done,
-    .pad button {
+    .brain svg,
+    .big,
+    .combo,
+    .gain,
+    .options button {
       animation: none;
       transition: none;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tegio_core/tegio_core.dart';
 
 import 'state.dart';
@@ -10,7 +11,7 @@ String normalizePhone(String input) {
   return '';
 }
 
-/// Telefon va SMS bilan kirish (B-01).
+/// Google akkaunti yoki telefon va SMS bilan kirish (B-01).
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -44,6 +45,15 @@ class _LoginPageState extends State<LoginPage> {
     if (mounted) setState(() => _busy = false);
   }
 
+  // Google'dan qaytgach sessiyani supabase_flutter manzildan o'zi oladi.
+  Future<void> _google() async {
+    setState(() => _busy = true);
+    await attempt(context, () async {
+      await db.auth.signInWithOAuth(OAuthProvider.google, redirectTo: Uri.base.origin);
+    });
+    if (mounted) setState(() => _busy = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final sent = _sentTo != null;
@@ -59,6 +69,20 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Text('${TegioBrand.name} restoran tizimi', style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 20),
+                if (!sent) ...[
+                  FilledButton.icon(
+                    onPressed: _busy ? null : _google,
+                    icon: const Text('G', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                    label: const Text('Google orqali kirish'),
+                  ),
+                  const SizedBox(height: 16),
+                  const Row(children: [
+                    Expanded(child: Divider()),
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('yoki telefon bilan')),
+                    Expanded(child: Divider()),
+                  ]),
+                  const SizedBox(height: 16),
+                ],
                 if (!sent)
                   TextField(
                     controller: _phone,

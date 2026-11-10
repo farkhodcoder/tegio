@@ -13,7 +13,7 @@ const SUPABASE_STUB = `
   create role service_role nologin bypassrls;
   create schema auth;
   create schema extensions;
-  create table auth.users (id uuid primary key default gen_random_uuid(), phone text, phone_confirmed_at timestamptz);
+  create table auth.users (id uuid primary key default gen_random_uuid(), phone text, phone_confirmed_at timestamptz, email text, raw_app_meta_data jsonb not null default '{}');
   create function auth.jwt() returns jsonb language sql stable as $$ select '{}'::jsonb $$;
   create schema vault;
   create table vault.secrets (name text primary key, decrypted_secret text not null);

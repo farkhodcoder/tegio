@@ -93,10 +93,28 @@ Dashboard: Authentication.
 - Sign In / Providers: "Allow new users to sign up" ni o'chiring. Telefon akkauntlarini server o'zi yaratadi, adminlar taklif bilan kiradi.
 - Multi-Factor: TOTP yoqilgan bo'lsin.
 
+## 5a. Restoran tizimiga Google orqali kirish
+
+1. Google Cloud Console, APIs & Services, Credentials: "OAuth client ID", turi Web application.
+   Authorized redirect URI: `https://zfgeeblonoxqxcdndshm.supabase.co/auth/v1/callback`.
+2. Supabase Dashboard, Authentication, Sign In / Providers, Google: yoqing, Client ID va Client Secret'ni qo'ying.
+3. Authentication, URL Configuration, Redirect URLs: `https://tegio-biz.vercel.app/**` (domen ulanganda `https://biz.tegio.uz/**`).
+4. Google akkaunti birinchi marta kirganda hisob yaratiladi, shuning uchun "Allow new users to sign up" yoqilgan bo'lishi kerak.
+   Xavfsiz: biznesni faqat tasdiqlangan telefon yoki Google akkaunti ochadi (`private.can_open_business`), admin bo'lish uchun esa `admin_users` dagi taklif va TOTP kerak.
+
+Google bilan kirgan xodimga telefon bo'yicha yuborilgan taklif bog'lanmaydi: xodimlar telefon orqali kiradi.
+
 ## 6. Birinchi super admin
 
-1. Dashboard, Authentication, Users, Add user: email va parol kiriting.
-2. SQL Editor'da (emailni o'zingiznikiga almashtiring):
+1. SQL Editor'da taklif yozing (emailni o'zingiznikiga almashtiring). Hisob shu email bilan ochilganda u avtomatik bog'lanadi:
+
+```sql
+insert into public.admin_users (email, role, status) values ('siz@misol.uz', 'super_admin', 'invited');
+```
+
+2. Dashboard, Authentication, Users, Add user: shu email va kuchli parol, "Auto Confirm User" belgilangan.
+
+Eski usul (hisob allaqachon bor bo'lsa):
 
 ```sql
 insert into public.admin_users (user_id, email, role, status)

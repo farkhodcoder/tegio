@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b1d4a"/>
+      <stop offset="0.55" stop-color="#c2412b"/>
+      <stop offset="1" stop-color="#f59e4c"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe2a3"/>
+      <stop offset="1" stop-color="#f7a541"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset="1" stop-color="#fff3c4" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="tile" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#1f5f8b"/>
+      <path d="M20 4 L36 20 L20 36 L4 20 Z" fill="#2f86b8"/>
+      <circle cx="20" cy="20" r="5" fill="#f2d48a"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="400" fill="url(#sky)"/>
+  <circle cx="640" cy="120" r="46" fill="#ffd27a" opacity="0.9"/>
+  <!-- bino -->
+  <rect x="60" y="120" width="680" height="280" fill="#6b3a24"/>
+  <rect x="60" y="120" width="680" height="26" fill="url(#tile)"/>
+  <g fill="url(#glow)">
+    <path d="M110 380 V230 a60 60 0 0 1 120 0 V380 Z"/>
+    <path d="M280 380 V230 a60 60 0 0 1 120 0 V380 Z"/>
+    <path d="M450 380 V230 a60 60 0 0 1 120 0 V380 Z"/>
+    <path d="M620 380 V230 a50 50 0 0 1 100 0 V380 Z" opacity="0.85"/>
+  </g>
+  <g stroke="#6b3a24" stroke-width="6" fill="none">
+    <path d="M170 170 V380 M110 280 H230"/>
+    <path d="M340 170 V380 M280 280 H400"/>
+    <path d="M510 170 V380 M450 280 H570"/>
+  </g>
+  <!-- chiroqlar ipi -->
+  <path d="M0 60 Q200 130 400 70 T800 80" stroke="#2a1410" stroke-width="2" fill="none"/>
+  <g>
+    <circle cx="60" cy="82" r="22" fill="url(#lamp)"/><circle cx="60" cy="82" r="5" fill="#fff1b8"/>
+    <circle cx="160" cy="104" r="22" fill="url(#lamp)"/><circle cx="160" cy="104" r="5" fill="#fff1b8"/>
+    <circle cx="270" cy="104" r="22" fill="url(#lamp)"/><circle cx="270" cy="104" r="5" fill="#fff1b8"/>
+    <circle cx="380" cy="74" r="22" fill="url(#lamp)"/><circle cx="380" cy="74" r="5" fill="#fff1b8"/>
+    <circle cx="490" cy="62" r="22" fill="url(#lamp)"/><circle cx="490" cy="62" r="5" fill="#fff1b8"/>
+    <circle cx="600" cy="80" r="22" fill="url(#lamp)"/><circle cx="600" cy="80" r="5" fill="#fff1b8"/>
+    <circle cx="720" cy="88" r="22" fill="url(#lamp)"/><circle cx="720" cy="88" r="5" fill="#fff1b8"/>
+  </g>
+  <!-- tapchan va choynak -->
+  <rect x="140" y="330" width="420" height="22" rx="4" fill="#c98a3c"/>
+  <rect x="150" y="352" width="16" height="48" fill="#8a5a22"/>
+  <rect x="534" y="352" width="16" height="48" fill="#8a5a22"/>
+  <rect x="160" y="318" width="380" height="14" rx="6" fill="#b3261e"/>
+  <g transform="translate(330 270)">
+    <ellipse cx="30" cy="36" rx="34" ry="26" fill="#2f86b8"/>
+    <rect x="18" y="4" width="24" height="12" rx="4" fill="#1f5f8b"/>
+    <path d="M62 30 q22 -6 26 -22" stroke="#2f86b8" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M-2 28 q-16 10 -4 26" stroke="#2f86b8" stroke-width="6" fill="none"/>
+    <circle cx="30" cy="36" r="8" fill="#f2d48a"/>
+  </g>
+  <g fill="#f5f0e6">
+    <ellipse cx="250" cy="316" rx="26" ry="6"/>
+    <ellipse cx="460" cy="316" rx="26" ry="6"/>
+  </g>
+  <circle cx="250" cy="306" r="13" fill="#e8a54b"/>
+  <circle cx="460" cy="306" r="13" fill="#e8a54b"/>
+</svg>

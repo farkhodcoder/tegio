@@ -12,11 +12,19 @@ Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`, `ap-south-1`). Sa
 
 | Manzil | Ilova | Rejim |
 | --- | --- | --- |
-| https://tegio-site.vercel.app | Mehmon sayti | Demo (`TEGIO_DEMO=1`): xotiradagi namuna kafe, SMS kodi ekranda |
-| https://tegio-biz.vercel.app | Restoran tizimi | Jonli Supabase, kirish uchun SMS kaliti kerak |
+| https://tegio-site.vercel.app | Mehmon sayti | Jonli Supabase (`TEGIO_API_URL`). Namuna kafe: `/anor` |
+| https://tegio-biz.vercel.app | Restoran tizimi | Jonli Supabase. SMS'siz faqat sinov raqami va Google bilan kirish |
 | https://tegio-admin.vercel.app | Admin panel | Jonli Supabase, birinchi admin 6-bo'limdagidek |
 
-Sayt Vercel'ning o'zida build qilinadi (Root Directory `apps/site`): Windows'da qurilgan `.vercel/output` Linux'da ishlamaydi. Yangilash uchun repozitoriy ildizidan `npx vercel deploy --prod`. Haqiqiy backend'ga o'tishda `TEGIO_DEMO` ni o'chirib, `TEGIO_API_URL` qo'ying.
+Sayt Vercel'ning o'zida build qilinadi (Root Directory `apps/site`): Windows'da qurilgan `.vercel/output` Linux'da ishlamaydi. Yangilash uchun repozitoriy ildizidan `npx vercel deploy --prod`. Sayt jonli API'ga ulangan; xotiradagi demo kerak bo'lsa `TEGIO_API_URL` o'rniga `TEGIO_DEMO=1`.
+
+**Sinov raqami.** Eskiz ulanmaguncha (va do'kon tekshiruvi uchun) `private.test_logins` jadvalidagi raqam belgilangan kod bilan kiradi, SMS yuborilmaydi. Kod faqat bazada turadi, repozitoriyga yozilmaydi:
+
+```sql
+insert into private.test_logins (phone, code, note) values ('+998110000001', '<6 xonali kod>', 'demo egasi');
+```
+
+Jonli bazadagi `/anor` namunasi shu raqam egasiga tegishli: restoran tizimiga shu raqam bilan kirib, logotip, banner, Wi-Fi, menyu va narxlarni o'zgartirib ko'rish mumkin. Ishga tushirishdan oldin jadvalni tozalang yoki raqamni o'chiring.
 
 ## 1. Edge Function sirlari
 

@@ -44,3 +44,18 @@ test('boshqa email bilan ochilgan hisob adminga bog\'lanmaydi', async () => {
   const [row] = await db.sql<{ user_id: string | null }>(`select user_id from public.admin_users where email = 'admin2@misol.uz'`);
   assert.equal(row.user_id, null);
 });
+
+test('yangi biznes odatiy tugmalar bilan ochiladi', async () => {
+  const owner = await user('tugma@gmail.com', ['google']);
+  const [{ id }] = await db.as<{ id: string }>('authenticated', owner, `select public.create_business('Tugma', 'tugma-kafe', 'Markaz') as id`);
+  const rows = await db.sql<{ kind: string }>('select kind from public.landing_items where business_id = $1 order by position', [id]);
+  assert.deepEqual(rows.map((r) => r.kind), ['loyalty', 'menu', 'wifi', 'feedback', 'game']);
+});
+
+test('sinov raqami kodi faqat serverga ochiq', async () => {
+  await db.sql(`insert into private.test_logins (phone, code) values ('+998900000001', '424242')`);
+  assert.equal(await db.rpc('otp_test_code', ['+998900000001']), '424242');
+  assert.equal(await db.rpc('otp_test_code', ['+998900000002']), null);
+  await assert.rejects(db.as('authenticated', null, `select public.otp_test_code('+998900000001')`), /permission denied/);
+  await assert.rejects(db.as('authenticated', null, `select * from private.test_logins`), /permission denied/);
+});

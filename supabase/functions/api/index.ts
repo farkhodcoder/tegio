@@ -83,10 +83,13 @@ async function otpSend(db: SupabaseClient, req: Request, body: Body): Promise<Re
   });
   if (!connectionOk || !ipOk) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  const code = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
+  // Sinov raqami (private.test_logins): kod oldindan belgilangan, SMS yuborilmaydi.
+  const { data: testCode } = await db.rpc('otp_test_code', { p_phone: phone });
+  const code = typeof testCode === 'string' ? testCode : String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
   const { data: allowed, error } = await db.rpc('otp_issue', { p_phone: phone, p_code: code });
   if (error) return rpcFail('otp_issue', error.code);
   if (!allowed) return json({ ok: false, error: 'rate_limited' }, 429);
+  if (typeof testCode === 'string') return json({ ok: true });
 
   // Kod faqat aniq yoqilgan sinov rejimida javobga chiqadi; odatiy holatda SMS kerak.
   if (Deno.env.get('OTP_DEV_MODE') === 'true') return json({ ok: true, dev_code: code });
@@ -403,6 +406,28 @@ async function staffRoute(db: SupabaseClient, req: Request, route: string, body:
     case 'POST /ai/menu-import':
     case 'POST /ai/translate':
       return aiDraft(db, userId, route, body);
+    // P-04: qaysi tashqi xizmatlar ulangan. Kalitlarning o'zi emas, faqat bor-yo'qligi qaytadi.
+    case 'POST /admin/health': {
+      const claims = JSON.parse(atob((req.headers.get('Authorization') ?? '').split('.')[1].replaceAll('-', '+').replaceAll('_', '/')));
+      const { data: allowed } = await db.rpc('is_super_admin', { p_user_id: userId });
+      if (!allowed || claims.aal !== 'aal2') return json({ ok: false, error: 'forbidden' }, 403);
+      const has = (...names: string[]) => names.every((name) => !!Deno.env.get(name));
+      const started = Date.now();
+      const { error } = await db.from('plans').select('id').limit(1);
+      return json({
+        ok: true,
+        database: { ok: !error, ms: Date.now() - started },
+        integrations: {
+          sms: has('ESKIZ_EMAIL', 'ESKIZ_PASSWORD'),
+          otp_dev_mode: Deno.env.get('OTP_DEV_MODE') === 'true',
+          click: has('CLICK_SERVICE_ID', 'CLICK_MERCHANT_ID', 'CLICK_SECRET_KEY'),
+          payme: has('PAYME_MERCHANT_ID', 'PAYME_KEY'),
+          telegram: has('TELEGRAM_BOT_TOKEN'),
+          ai: has('ANTHROPIC_API_KEY'),
+        },
+        checked_at: new Date().toISOString(),
+      });
+    }
     case 'POST /admin/invite': {
       const claims = JSON.parse(atob((req.headers.get('Authorization') ?? '').split('.')[1].replaceAll('-', '+').replaceAll('_', '/')));
       const { data: allowed } = await db.rpc('is_super_admin', { p_user_id: userId });

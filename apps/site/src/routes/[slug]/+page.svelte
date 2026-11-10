@@ -12,7 +12,7 @@
   const cafe = $derived(data.cafe as ActivePage);
   const tagCode = $derived(page.url.searchParams.get('t'));
 
-  const INTERNAL: Record<string, string> = { menu: 'menu', wifi: 'wifi', loyalty: 'karta', feedback: 'fikr' };
+  const INTERNAL: Record<string, string> = { menu: 'menu', wifi: 'wifi', loyalty: 'karta', feedback: 'fikr', game: 'oyin' };
 
   function track(action: string) {
     const body = JSON.stringify({ slug: cafe.slug, action, tag: tagCode });
@@ -46,8 +46,6 @@
     // F-03, F-04: qator bahoga bog'liq emas va hech qanday mukofot bermaydi.
     const google = safeHttpUrl(cafe.location.google_review_url);
     if (google) list.push({ kind: 'google', href: google, text: m.fb_google_title, external: true });
-    // Kutish paytidagi aql o'yini: hamma kafeda.
-    list.push({ kind: 'game', href: `/${cafe.slug}/oyin${page.url.search}`, text: m.row_game, external: false });
     return list.sort((a, b) => ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind));
   });
 </script>
@@ -90,6 +88,7 @@
   <p class="where">
     {cafe.location.name}{#if cafe.tag?.table_label}{' · '}{fmt(m.table, { n: cafe.tag.table_label })}{/if}
   </p>
+  {#if cafe.location.address}<p class="address">{cafe.location.address}</p>{/if}
 
   <nav class="rows">
     {#each rows as row (row.kind)}
@@ -215,6 +214,11 @@
     color: #7a2a0a;
     font-size: 0.875rem;
     font-weight: 600;
+  }
+  .address {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.875rem;
   }
   .rows {
     display: grid;

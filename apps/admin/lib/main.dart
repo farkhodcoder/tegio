@@ -6,6 +6,7 @@ import 'sections/businesses.dart';
 import 'sections/content.dart';
 import 'sections/dashboard.dart';
 import 'sections/finance.dart';
+import 'sections/health.dart';
 import 'sections/security.dart';
 import 'sections/support.dart';
 import 'sections/tags.dart';
@@ -64,6 +65,7 @@ class AdminHome extends StatelessWidget {
               section('Yorliqlar', Icons.nfc, const TagsSection()),
               section('Yordam', Icons.support_agent, const SupportSection()),
               section('Kontent va sozlamalar', Icons.tune, const ContentSection()),
+              if (admin['role'] == 'super_admin') section('Tizim holati', Icons.monitor_heart_outlined, const HealthSection()),
               if (admin['role'] == 'super_admin') section('Xavfsizlik', Icons.admin_panel_settings_outlined, const SecuritySection()),
             ],
           );

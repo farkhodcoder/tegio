@@ -23,7 +23,8 @@ Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`). Sayt, restoran t
 
 | Talablar | Holat | Izoh |
 | --- | --- | --- |
-| Kirish, biznes yaratish, sahifa sozlash, menyu, sodiqlik, kassir, fikrlar, mijozlar, jamoa | Yozilgan | Build o'tgan. Haqiqiy akkaunt bilan ochib ko'rilmagan |
+| Kirish, biznes yaratish, sahifa sozlash, menyu, sodiqlik, kassir, fikrlar, mijozlar, jamoa | Yozilgan | Jonli bazada sinov raqami bilan: kirish, biznes yaratish, rasm yuklash (RLS), Wi-Fi API orqali o'tgan |
+| Profil: logotip, banner, nom, shior, rang, filial manzili, yangi filial, tugmalar nomi va havolasi, taom rasmi | Yozilgan | Sahifa sozlamalarida jonli ko'rinish bilan |
 | B-14, B-15 (AI menyu va tarjima) | Kalit kerak | `ANTHROPIC_API_KEY`. Natija doim qoralama, egasi tasdiqlaydi |
 | To'lov (Click, Payme) | Kalit kerak | Webhook'lar yozilgan, merchant hisobi bilan sinalmagan |
 | B-08 | Yozilgan | Biz'da. Saytdagi `/{kafe}/yorliq` faqat demo rejimda qoldi |
@@ -35,7 +36,7 @@ Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`). Sayt, restoran t
 | Talablar | Holat | Izoh |
 | --- | --- | --- |
 | Boshqaruv, bizneslar, tariflar va to'lovlar, yorliqlar, yordam, kontent, xavfsizlik | Yozilgan | Email + TOTP, har bir RPC `aal2` ni tekshiradi. Build o'tgan, haqiqiy admin bilan ochib ko'rilmagan |
-| P-04 (tizim holati ekrani) | Yo'q | |
+| P-04 (tizim holati ekrani) | Yozilgan | Baza javobi va qaysi kalitlar ulangani; kalitning o'zi ko'rinmaydi |
 | P-28 (sessiya muddati) | Qisman | Supabase tarifiga bog'liq |
 
 ## Nofunksional talablar
@@ -52,7 +53,7 @@ Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`). Sayt, restoran t
 
 ## Ma'lum cheklovlar
 
-- SMS kaliti qo'yilmaguncha telefon orqali kirishning musbat yo'li jonli muhitda sinalmagan.
+- SMS kaliti qo'yilmaguncha haqiqiy raqamlar kira olmaydi; jonli muhitda faqat `private.test_logins` raqami va (sozlangandan keyin) Google ishlaydi.
 - Supabase maslahatlari: 13 ta INFO (faqat server o'qiydigan jadvallarda siyosat yo'q, ataylab) va 31 ta WARN (har biri rolni o'zi tekshiradigan RPC'lar). Unumdorlik bo'yicha: `guests` siyosatlarida `auth.uid()` har qatorda hisoblanadi, 31 ta tashqi kalitda indeks yo'q. Yuk oshganda ko'rib chiqiladi.
 - Muddati o'tgan shtamplar keyingi shtamp qo'yilganda yonadi; kartada ko'rsatish uchun rejali vazifa kerak.
 - Kassir roli uchun filial bo'yicha o'qish cheklovi yo'q: filialga biriktirilgan kassir o'z biznesining barcha jurnalini ko'radi.

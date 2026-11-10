@@ -14,8 +14,20 @@ function i18n(fields: Record<string, Four>): I18nMap {
 
 let id = 0;
 
+// Taomlar tartibida: static/demo/menu/*.svg
+const PHOTOS = ['osh', 'lagmon', 'kabob', 'somsa', 'qovoq', 'patir', 'qaymoq', 'qovurdoq', 'kokchoy', 'sheker'];
+let photo = 0;
+
 function item(price: number, tags: string[], name: Four, description: Four, portion: Four, available = true): PublicMenuItem {
-  return { id: `i${++id}`, price_uzs: price, photo_url: null, tags, available, i18n: i18n({ name, description, portion }) };
+  const file = PHOTOS[photo++];
+  return {
+    id: `i${++id}`,
+    price_uzs: price,
+    photo_url: file ? `/demo/menu/${file}.svg` : null,
+    tags,
+    available,
+    i18n: i18n({ name, description, portion })
+  };
 }
 
 function category(name: Four, items: PublicMenuItem[]): PublicCategory {
@@ -46,10 +58,11 @@ const anor: PublicPage = {
     wifi_password: 'anor-choy-2026'
   },
   items: [
+    { kind: 'loyalty', label: null, url: null },
     { kind: 'menu', label: null, url: null },
     { kind: 'wifi', label: null, url: null },
-    { kind: 'loyalty', label: null, url: null },
     { kind: 'feedback', label: null, url: null },
+    { kind: 'game', label: null, url: null },
     { kind: 'instagram', label: null, url: 'https://instagram.com' },
     { kind: 'telegram', label: null, url: 'https://t.me' },
     { kind: '2gis', label: null, url: 'https://2gis.uz' },

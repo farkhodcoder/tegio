@@ -522,12 +522,28 @@ class _ItemDialogState extends State<_ItemDialog> {
               TextField(controller: _price, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Narx, soʻm')),
               TextField(controller: _tags, decoration: const InputDecoration(labelText: 'Belgilar', hintText: 'achchiq, vegetarian')),
               const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: () => attempt(context, () async {
-                  final url = await uploadImage('item');
-                  if (url != null) setState(() => _photo = url);
-                }),
-                child: Text(_photo == null ? 'Rasm qoʻshish' : 'Rasmni almashtirish'),
+              if (_photo != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AspectRatio(aspectRatio: 16 / 10, child: Image.network(_photo!, fit: BoxFit.cover)),
+                ),
+                const SizedBox(height: 8),
+              ],
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => attempt(context, () async {
+                        final url = await uploadImage('item');
+                        if (url != null) setState(() => _photo = url);
+                      }),
+                      icon: const Icon(Icons.add_photo_alternate_outlined),
+                      label: Text(_photo == null ? 'Rasm qoʻshish' : 'Rasmni almashtirish'),
+                    ),
+                  ),
+                  if (_photo != null)
+                    IconButton(tooltip: 'Rasmni olib tashlash', onPressed: () => setState(() => _photo = null), icon: const Icon(Icons.close)),
+                ],
               ),
               const SizedBox(height: 8),
               _TranslationFields(source: _name, controllers: _translations),

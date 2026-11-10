@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+.dart_tool
+**/.dart_tool
+build
+apps/*/build
+**/.svelte-kit
+**/.vercel
+**/.env
+**/.env.*

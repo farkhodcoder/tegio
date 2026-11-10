@@ -8,6 +8,16 @@ Backend Supabase'da ishlayapti (loyiha `zfgeeblonoxqxcdndshm`, `ap-south-1`). Sa
 | `biz.tegio.uz` | Restoran tizimi (`apps/biz`) |
 | `admin.tegio.uz` | Admin panel (`apps/admin`) |
 
+## 0. Sinov havolalari (domen ulanguncha)
+
+| Manzil | Ilova | Rejim |
+| --- | --- | --- |
+| https://tegio-site.vercel.app | Mehmon sayti | Demo (`TEGIO_DEMO=1`): xotiradagi namuna kafe, SMS kodi ekranda |
+| https://tegio-biz.vercel.app | Restoran tizimi | Jonli Supabase, kirish uchun SMS kaliti kerak |
+| https://tegio-admin.vercel.app | Admin panel | Jonli Supabase, birinchi admin 6-bo'limdagidek |
+
+Sayt Vercel'ning o'zida build qilinadi (Root Directory `apps/site`): Windows'da qurilgan `.vercel/output` Linux'da ishlamaydi. Yangilash uchun repozitoriy ildizidan `npx vercel deploy --prod`. Haqiqiy backend'ga o'tishda `TEGIO_DEMO` ni o'chirib, `TEGIO_API_URL` qo'ying.
+
 ## 1. Edge Function sirlari
 
 Supabase Dashboard: Project Settings, Edge Functions, Secrets. Kalit qo'shilmaguncha tegishli funksiya xato qaytarmaydi, foydalanuvchiga "ulanmagan" deb aytadi.
